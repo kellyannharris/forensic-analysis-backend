@@ -1,0 +1,1076 @@
+### Forensic Backend API Test Suite
+### Base URL: http://localhost:8000
+
+# System Health Check
+GET http://localhost:8000/health
+Accept: application/json
+
+###
+
+# Models Information
+GET http://localhost:8000/models/info
+Accept: application/json
+
+###
+
+# ============================================
+# CRIME PREDICTION ENDPOINTS
+# ============================================
+
+# Spatial Crime Rate Prediction
+POST http://localhost:8000/predict/spatial
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    }
+  ]
+}
+
+###
+
+# Temporal Crime Rate Prediction (7 days)
+POST http://localhost:8000/predict/temporal
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    },
+    {
+      "DATE OCC": "2024-01-03",
+      "TIME OCC": "0900",
+      "AREA": 3,
+      "LAT": 34.0722,
+      "LON": -118.2637,
+      "Crm Cd": 330,
+      "Vict Age": 35,
+      "Premis Cd": 103,
+      "Weapon Used Cd": 210,
+      "AREA NAME": "Southwest",
+      "Vict Sex": "M",
+      "Vict Descent": "B",
+      "Mocodes": "0425 0352",
+      "LOCATION": "789 Pine St",
+      "Crm Cd Desc": "Burglary - Residential",
+      "Premis Desc": "Single Family Dwelling",
+      "Weapon Desc": "None",
+      "Status": "IC"
+    }
+  ],
+  "days_ahead": 7
+}
+
+###
+
+# Temporal Crime Rate Prediction (30 days)
+POST http://localhost:8000/predict/temporal
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    }
+  ],
+  "days_ahead": 30
+}
+
+###
+
+# ============================================
+# NETWORK ANALYSIS ENDPOINTS
+# ============================================
+
+# Build Criminal Network
+POST http://localhost:8000/network/build
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    },
+    {
+      "DATE OCC": "2024-01-03",
+      "TIME OCC": "0900",
+      "AREA": 3,
+      "LAT": 34.0722,
+      "LON": -118.2637,
+      "Crm Cd": 330,
+      "Vict Age": 35,
+      "Premis Cd": 103,
+      "Weapon Used Cd": 210,
+      "AREA NAME": "Southwest",
+      "Vict Sex": "M",
+      "Vict Descent": "B",
+      "Mocodes": "0425 0352",
+      "LOCATION": "789 Pine St",
+      "Crm Cd Desc": "Burglary - Residential",
+      "Premis Desc": "Single Family Dwelling",
+      "Weapon Desc": "None",
+      "Status": "IC"
+    }
+  ],
+  "top_n": 5
+}
+
+###
+
+# Network Centrality Analysis
+GET http://localhost:8000/network/centrality?top_n=10
+Accept: application/json
+
+###
+
+# Network Community Detection
+GET http://localhost:8000/network/communities?algorithm=greedy_modularity
+Accept: application/json
+
+###
+
+# Network Summary
+GET http://localhost:8000/network/summary
+Accept: application/json
+
+###
+
+# ============================================
+# SPATIAL ANALYSIS ENDPOINTS
+# ============================================
+
+# Prepare Spatial Data
+POST http://localhost:8000/spatial/prepare
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    }
+  ],
+  "n_clusters": 3,
+  "radius_km": 2.0
+}
+
+###
+
+# Spatial Clustering
+POST http://localhost:8000/spatial/cluster
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    }
+  ],
+  "n_clusters": 2,
+  "radius_km": 1.5
+}
+
+###
+
+# Spatial Hotspots Analysis
+POST http://localhost:8000/spatial/hotspots
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    }
+  ],
+  "n_clusters": 2,
+  "radius_km": 1.0
+}
+
+###
+
+# Spatial Analysis Summary
+POST http://localhost:8000/spatial/summary
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    }
+  ],
+  "n_clusters": 3,
+  "radius_km": 2.0
+}
+
+###
+
+# ============================================
+# TEMPORAL ANALYSIS ENDPOINTS
+# ============================================
+
+# Prepare Temporal Data
+POST http://localhost:8000/temporal/prepare
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    }
+  ],
+  "time_unit": "daily"
+}
+
+###
+
+# Temporal Seasonality Detection
+GET http://localhost:8000/temporal/seasonality?period=7
+Accept: application/json
+
+###
+
+# Temporal ARIMA Model
+GET http://localhost:8000/temporal/arima?order=5,1,0
+Accept: application/json
+
+###
+
+# Temporal Forecast
+POST http://localhost:8000/temporal/forecast
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    }
+  ],
+  "days_ahead": 14,
+  "confidence_level": 0.95
+}
+
+###
+
+# Temporal Analysis Summary
+POST http://localhost:8000/temporal/summary
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    }
+  ]
+}
+
+###
+
+# ============================================
+# CRIME CLASSIFICATION ENDPOINTS
+# ============================================
+
+# Crime Type Classification
+POST http://localhost:8000/classify/crime-types
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    }
+  ]
+}
+
+###
+
+# Crime Distribution Analysis
+POST http://localhost:8000/classify/distribution
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    }
+  ]
+}
+
+###
+
+# Crime Trends Analysis
+POST http://localhost:8000/classify/trends
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    }
+  ]
+}
+
+###
+
+# Crime Classification Summary
+POST http://localhost:8000/classify/summary
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    }
+  ]
+}
+
+###
+
+# ============================================
+# DATA ANALYSIS ENDPOINTS
+# ============================================
+
+# Generate Analysis Report
+POST http://localhost:8000/analyze/report
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    },
+    {
+      "DATE OCC": "2024-01-03",
+      "TIME OCC": "0900",
+      "AREA": 3,
+      "LAT": 34.0722,
+      "LON": -118.2637,
+      "Crm Cd": 330,
+      "Vict Age": 35,
+      "Premis Cd": 103,
+      "Weapon Used Cd": 210,
+      "AREA NAME": "Southwest",
+      "Vict Sex": "M",
+      "Vict Descent": "B",
+      "Mocodes": "0425 0352",
+      "LOCATION": "789 Pine St",
+      "Crm Cd Desc": "Burglary - Residential",
+      "Premis Desc": "Single Family Dwelling",
+      "Weapon Desc": "None",
+      "Status": "IC"
+    }
+  ]
+}
+
+###
+
+# Analyze Crime Types
+GET http://localhost:8000/analyze/crime-types
+Accept: application/json
+
+###
+
+# ============================================
+# SIMPLE DATA TESTS
+# ============================================
+
+# Simple Spatial Prediction Test
+POST http://localhost:8000/predict/spatial
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200
+    }
+  ]
+}
+
+###
+
+# Simple Crime Classification Test
+POST http://localhost:8000/classify/crime-types
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    }
+  ]
+}
+
+###
+
+# ============================================
+# BATCH TESTING DATA
+# ============================================
+
+# Large Dataset Test - Multiple Crime Records
+POST http://localhost:8000/predict/spatial
+Content-Type: application/json
+
+{
+  "crime_data": [
+    {
+      "DATE OCC": "2024-01-01",
+      "TIME OCC": "1200",
+      "AREA": 1,
+      "LAT": 34.0522,
+      "LON": -118.2437,
+      "Crm Cd": 510,
+      "Vict Age": 25,
+      "Premis Cd": 101,
+      "Weapon Used Cd": 200,
+      "AREA NAME": "Central",
+      "Vict Sex": "M",
+      "Vict Descent": "W",
+      "Mocodes": "0416 0344",
+      "LOCATION": "123 Main St",
+      "Crm Cd Desc": "Vehicle - Stolen",
+      "Premis Desc": "Street",
+      "Weapon Desc": "Unknown",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-02",
+      "TIME OCC": "1800",
+      "AREA": 2,
+      "LAT": 34.0622,
+      "LON": -118.2537,
+      "Crm Cd": 440,
+      "Vict Age": 30,
+      "Premis Cd": 102,
+      "Weapon Used Cd": 205,
+      "AREA NAME": "Rampart",
+      "Vict Sex": "F",
+      "Vict Descent": "H",
+      "Mocodes": "0420 0348",
+      "LOCATION": "456 Oak Ave",
+      "Crm Cd Desc": "Theft - From Vehicle",
+      "Premis Desc": "Parking Lot",
+      "Weapon Desc": "None",
+      "Status": "AA"
+    },
+    {
+      "DATE OCC": "2024-01-03",
+      "TIME OCC": "0900",
+      "AREA": 3,
+      "LAT": 34.0722,
+      "LON": -118.2637,
+      "Crm Cd": 330,
+      "Vict Age": 35,
+      "Premis Cd": 103,
+      "Weapon Used Cd": 210,
+      "AREA NAME": "Southwest",
+      "Vict Sex": "M",
+      "Vict Descent": "B",
+      "Mocodes": "0425 0352",
+      "LOCATION": "789 Pine St",
+      "Crm Cd Desc": "Burglary - Residential",
+      "Premis Desc": "Single Family Dwelling",
+      "Weapon Desc": "None",
+      "Status": "IC"
+    },
+    {
+      "DATE OCC": "2024-01-04",
+      "TIME OCC": "2100",
+      "AREA": 4,
+      "LAT": 34.0822,
+      "LON": -118.2737,
+      "Crm Cd": 624,
+      "Vict Age": 40,
+      "Premis Cd": 104,
+      "Weapon Used Cd": 215,
+      "AREA NAME": "Hollywood",
+      "Vict Sex": "F",
+      "Vict Descent": "A",
+      "Mocodes": "0430 0356",
+      "LOCATION": "321 Elm St",
+      "Crm Cd Desc": "Battery - Simple Assault",
+      "Premis Desc": "Sidewalk",
+      "Weapon Desc": "Personal Weapons",
+      "Status": "AO"
+    },
+    {
+      "DATE OCC": "2024-01-05",
+      "TIME OCC": "1500",
+      "AREA": 5,
+      "LAT": 34.0922,
+      "LON": -118.2837,
+      "Crm Cd": 310,
+      "Vict Age": 28,
+      "Premis Cd": 105,
+      "Weapon Used Cd": 220,
+      "AREA NAME": "Wilshire",
+      "Vict Sex": "M",
+      "Vict Descent": "O",
+      "Mocodes": "0435 0360",
+      "LOCATION": "654 Maple Ave",
+      "Crm Cd Desc": "Burglary - Commercial",
+      "Premis Desc": "Department Store",
+      "Weapon Desc": "None",
+      "Status": "IC"
+    }
+  ]
+}
+
+### 

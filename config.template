@@ -1,0 +1,29 @@
+# Forensic Backend Configuration Template
+# Copy this file to .env and modify as needed
+
+# Server Configuration
+HOST=0.0.0.0
+PORT=8000
+DEBUG=True
+
+# Model Configuration
+LOAD_MODELS_ON_STARTUP=True
+MODEL_LOADING_TIMEOUT=300
+
+# Analysis Configuration
+MAX_CRIME_RECORDS=100000
+DEFAULT_PREDICTION_DAYS=30
+DEFAULT_CLUSTERS=5
+DEFAULT_HOTSPOT_RADIUS=1.0
+
+# Security Configuration
+SECRET_KEY=your-secret-key-here-change-in-production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Database Configuration (if needed)
+# DATABASE_URL=postgresql://username:password@localhost:5432/database_name
+
+# Logging Configuration
+LOG_LEVEL=INFO
+LOG_FILE=forensic_backend.log 

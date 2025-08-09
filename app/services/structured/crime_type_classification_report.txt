@@ -1,0 +1,83 @@
+Accuracy: 0.4890
+
+                                                          precision    recall  f1-score   support
+
+                                                   ARSON       0.38      0.20      0.26        15
+            ASSAULT WITH DEADLY WEAPON ON POLICE OFFICER       0.50      0.33      0.40         3
+          ASSAULT WITH DEADLY WEAPON, AGGRAVATED ASSAULT       0.43      0.62      0.51       265
+                                       ATTEMPTED ROBBERY       0.00      0.00      0.00        24
+                                BATTERY - SIMPLE ASSAULT       0.49      0.74      0.59       361
+                                 BATTERY POLICE (SIMPLE)       0.20      0.13      0.16        15
+                             BATTERY WITH SEXUAL CONTACT       0.00      0.00      0.00        20
+                                           BIKE - STOLEN       0.14      0.07      0.09        42
+                                              BOMB SCARE       0.00      0.00      0.00         2
+                                         BRANDISH WEAPON       0.31      0.17      0.22        63
+                                      BUNCO, GRAND THEFT       0.35      0.29      0.31        28
+                                      BUNCO, PETTY THEFT       0.00      0.00      0.00        11
+                                                BURGLARY       0.40      0.36      0.38       286
+                                   BURGLARY FROM VEHICLE       0.44      0.48      0.46       327
+                        BURGLARY FROM VEHICLE, ATTEMPTED       0.00      0.00      0.00         4
+                                     BURGLARY, ATTEMPTED       0.00      0.00      0.00        22
+                 CHILD ABUSE (PHYSICAL) - SIMPLE ASSAULT       0.22      0.11      0.14        19
+                          CHILD ANNOYING (17YRS & UNDER)       0.00      0.00      0.00         5
+                          CHILD NEGLECT (SEE 300 W.I.C.)       0.00      0.00      0.00         5
+                                          CHILD STEALING       0.50      0.33      0.40         3
+                                       CONTEMPT OF COURT       0.31      0.27      0.29        15
+                                       CRIMINAL HOMICIDE       0.00      0.00      0.00         6
+                  CRIMINAL THREATS - NO WEAPON DISPLAYED       0.78      0.90      0.83       105
+CRM AGNST CHLD (13 OR UNDER) (14-15 & SUSP 10 YRS OLDER)       0.00      0.00      0.00         7
+                          DISCHARGE FIREARMS/SHOTS FIRED       0.25      0.07      0.11        15
+                                    DISTURBING THE PEACE       0.00      0.00      0.00         9
+                        DOCUMENT FORGERY / STOLEN FELONY       0.11      0.05      0.07        19
+              EMBEZZLEMENT, GRAND THEFT ($950.01 & OVER)       0.53      0.38      0.44        21
+                                               EXTORTION       0.00      0.00      0.00        11
+                                        FAILURE TO YIELD       0.14      0.17      0.15         6
+                                      FALSE IMPRISONMENT       0.00      0.00      0.00         2
+                 HUMAN TRAFFICKING - COMMERCIAL SEX ACTS       0.00      0.00      0.00         2
+                                       INDECENT EXPOSURE       0.00      0.00      0.00         8
+                   INTIMATE PARTNER - AGGRAVATED ASSAULT       0.26      0.15      0.19        65
+                       INTIMATE PARTNER - SIMPLE ASSAULT       0.55      0.63      0.58       222
+                                              KIDNAPPING       0.00      0.00      0.00         6
+                 LETTERS, LEWD  -  TELEPHONE CALLS, LEWD       0.37      0.35      0.36        46
+                                            LEWD CONDUCT       0.00      0.00      0.00         4
+                                         ORAL COPULATION       0.00      0.00      0.00         4
+                                           OTHER ASSAULT       0.00      0.00      0.00        19
+                               OTHER MISCELLANEOUS CRIME       0.09      0.03      0.04        37
+                                                   Other       0.00      0.00      0.00        24
+                                              PICKPOCKET       0.25      0.39      0.30        18
+                                          RAPE, FORCIBLE       0.00      0.00      0.00        21
+                                        RESISTING ARREST       0.00      0.00      0.00         6
+                                                 ROBBERY       0.31      0.27      0.29       157
+               SEX OFFENDER REGISTRANT OUT OF COMPLIANCE       0.29      0.40      0.33         5
+SEX,UNLAWFUL(INC MUTUAL CONSENT, PENETRATION W/ FRGN OBJ       0.00      0.00      0.00         7
+                     SEXUAL PENETRATION W/FOREIGN OBJECT       0.00      0.00      0.00         7
+                SHOPLIFTING - PETTY THEFT ($950 & UNDER)       0.63      0.72      0.67       150
+                SHOPLIFTING-GRAND THEFT ($950.01 & OVER)       0.08      0.04      0.05        27
+                       SHOTS FIRED AT INHABITED DWELLING       0.00      0.00      0.00         8
+        SHOTS FIRED AT MOVING VEHICLE, TRAIN OR AIRCRAFT       0.00      0.00      0.00         3
+ SODOMY/SEXUAL CONTACT B/W PENIS OF ONE PERS TO ANUS OTH       0.00      0.00      0.00         3
+                                                STALKING       0.00      0.00      0.00         4
+                      THEFT FROM MOTOR VEHICLE - ATTEMPT       0.00      0.00      0.00         4
+     THEFT FROM MOTOR VEHICLE - GRAND ($950.01 AND OVER)       0.30      0.33      0.31       186
+         THEFT FROM MOTOR VEHICLE - PETTY ($950 & UNDER)       0.24      0.03      0.05       201
+                                       THEFT OF IDENTITY       0.57      0.80      0.67       308
+                                   THEFT PLAIN - ATTEMPT       0.00      0.00      0.00         3
+                      THEFT PLAIN - PETTY ($950 & UNDER)       0.31      0.36      0.33       262
+                                           THEFT, PERSON       0.00      0.00      0.00        21
+THEFT-GRAND ($950.01 & OVER)EXCPT,GUNS,FOWL,LIVESTK,PROD       0.30      0.18      0.23       170
+                         THREATENING PHONE CALLS/LETTERS       0.00      0.00      0.00         3
+                       THROWING OBJECT AT MOVING VEHICLE       0.00      0.00      0.00         3
+                                             TRESPASSING       0.48      0.42      0.45        93
+                            UNAUTHORIZED COMPUTER ACCESS       0.00      0.00      0.00         3
+ VANDALISM - FELONY ($400 & OVER, ALL CHURCH VANDALISMS)       0.59      0.62      0.60       311
+                VANDALISM - MISDEAMEANOR ($399 OR UNDER)       0.14      0.07      0.10       121
+                                VEHICLE - ATTEMPT STOLEN       0.36      0.25      0.29        20
+                                        VEHICLE - STOLEN       0.77      0.97      0.86       590
+VEHICLE, STOLEN - OTHER (MOTORIZED SCOOTERS, BIKES, ETC)       0.33      0.06      0.11        16
+                                VIOLATION OF COURT ORDER       0.21      0.21      0.21        33
+                          VIOLATION OF RESTRAINING ORDER       0.37      0.44      0.40        59
+                VIOLATION OF TEMPORARY RESTRAINING ORDER       0.00      0.00      0.00         4
+
+                                                accuracy                           0.49      5000
+                                               macro avg       0.19      0.18      0.18      5000
+                                            weighted avg       0.43      0.49      0.45      5000
