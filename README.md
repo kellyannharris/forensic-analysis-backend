@@ -9,6 +9,16 @@
 
 A comprehensive FastAPI-based backend system for crime analysis and forensic evidence processing, combining structured crime data analytics with advanced unstructured forensic analysis capabilities.
 
+## ⚠️ Important Note About Model Files
+
+Due to GitHub's file size restrictions, the large crime type classification model (`crime_type_rf_model.pkl` - 590MB) is not included in this repository. To use crime type classification functionality:
+
+1. **Option 1**: Contact the author to obtain the pre-trained model
+2. **Option 2**: Train your own model using the included `crime_type_classifier.py` script
+3. **Option 3**: Use alternative smaller models for classification
+
+All other pre-trained models (< 200KB each) are included and ready to use.
+
 ---
 
 ## 🚀 Features
@@ -426,131 +436,3 @@ Copy `config.template` to `config.py` and modify as needed.
     "timestamp": "2025-01-15T10:30:00Z"
 }
 ```
-
-### Status Codes
-- `200`: Success
-- `400`: Bad Request (invalid data format)
-- `422`: Validation Error
-- `500`: Internal Server Error
-- `503`: Service Unavailable (models loading)
-
----
-
-## 📈 Performance Considerations
-
-### Processing Time Estimates
-
-| Operation | Small (1K records) | Medium (10K records) | Large (100K records) |
-|-----------|-------------------|---------------------|---------------------|
-| Spatial Prediction | <1s | 2-5s | 10-30s |
-| Network Analysis | 1-2s | 5-10s | 30-60s |
-| Spatial Clustering | <1s | 2-5s | 10-20s |
-| Temporal Analysis | 1-2s | 5-15s | 30-90s |
-| Crime Classification | <1s | 2-5s | 10-25s |
-
-### Optimization Tips
-1. **Batch Processing**: Use batch endpoints for multiple files
-2. **Data Sampling**: Use representative samples for large datasets
-3. **Model Caching**: Models are pre-loaded for optimal response times
-4. **Parallel Processing**: System supports concurrent requests
-
----
-
-## 🛡️ Security Considerations
-
-- Input validation on all endpoints
-- File type verification for uploads
-- Size limits on uploaded files
-- CORS configuration for web applications
-- No sensitive data logged
-
----
-
-## 🔄 Development
-
-### Adding New Models
-1. Create model class in appropriate service directory
-2. Add model loading to startup event in `main.py`
-3. Create API endpoints in relevant router
-4. Add tests for new functionality
-
-### Code Standards
-- Follow PEP 8 style guidelines
-- Use type hints throughout
-- Comprehensive error handling
-- Proper logging practices
-
----
-
-## 📝 Logging
-
-Logs are written to:
-- Console output (development)
-- `forensic_backend.log` file
-
-Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
-
----
-
-## 🤝 Contributing
-
-This is a capstone project by Kelly-Ann Harris. For questions or contributions:
-
-1. Review the code structure and documentation
-2. Follow existing patterns for new features
-3. Include tests for new functionality
-4. Update documentation as needed
-
----
-
-## 📄 License
-
-This project is part of the Crime & Forensic Analysis System capstone project.
-
----
-
-## 🆘 Troubleshooting
-
-### Common Issues
-
-#### Models Not Loading
-```bash
-# Check model files exist
-ls app/services/structured/*.pkl
-ls app/services/structured/*.joblib
-
-# Check logs
-tail -f forensic_backend.log
-```
-
-#### Memory Issues
-- Reduce batch sizes for large datasets
-- Consider increasing system memory
-- Use data sampling for exploration
-
-#### Connection Issues
-- Verify server is running on correct port
-- Check firewall settings
-- Confirm CORS configuration
-
-### Getting Help
-1. Check the logs: `forensic_backend.log`
-2. Visit the health endpoint: `/health`
-3. Review API documentation: `/docs`
-4. Verify model status: `/models/info`
-
----
-
-## 🎯 Next Steps
-
-1. **Deployment**: Consider containerization with Docker
-2. **Scaling**: Implement load balancing for production
-3. **Monitoring**: Add application performance monitoring
-4. **Security**: Implement authentication and authorization
-5. **Documentation**: Generate API client libraries
-
----
-
-**🚀 Ready to analyze crime data and forensic evidence!**
-
-For complete API documentation, visit http://localhost:8000/docs after starting the server. 
