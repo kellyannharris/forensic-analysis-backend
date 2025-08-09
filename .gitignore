@@ -147,15 +147,9 @@ tmp/
 uploads/
 temp_uploads/
 
-# Model files (if too large for git)
-# Note: Currently we keep pre-trained models in repo
-# Uncomment these lines if models become too large:
-# *.pkl
-# *.joblib
-# *.h5
-# *.pt
-# *.pth
-# models/
+# Large model files (exceeding GitHub limits)
+# Note: crime_type_rf_model.pkl is 590MB - too large for GitHub
+app/services/structured/crime_type_rf_model.pkl
 
 # Data files
 data/
