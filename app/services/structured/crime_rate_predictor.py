@@ -14,6 +14,14 @@ from prophet import Prophet
 from typing import Dict, List, Optional, Union
 import json
 
+# Import XGBoost for proper model loading
+try:
+    import xgboost as xgb
+    XGBOOST_AVAILABLE = True
+except ImportError:
+    XGBOOST_AVAILABLE = False
+    print("Warning: XGBoost not available. XGBoost models will be skipped.")
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -45,29 +53,105 @@ class CrimeRatePredictor:
         try:
             logger.info("Loading trained models...")
             
-            # Load spatial models
-            for model_file in self.models_dir.glob("*_model.joblib"):
-                model_name = model_file.stem.replace("_model", "")
-                self.spatial_models[model_name] = joblib.load(model_file)
+            # Load spatial models with proper handling for different model types
+            self._load_spatial_models()
             
             # Load temporal model
             prophet_path = self.models_dir / "prophet_model.joblib"
             if prophet_path.exists():
-                self.temporal_model = joblib.load(prophet_path)
+                try:
+                    self.temporal_model = joblib.load(prophet_path)
+                    logger.info("Prophet model loaded successfully")
+                except Exception as e:
+                    logger.error(f"Error loading Prophet model: {e}")
             
             # Load scaler and encoders
-            self.scaler = joblib.load(self.models_dir / "scaler.joblib")
-            self.label_encoders = joblib.load(self.models_dir / "label_encoders.joblib")
+            try:
+                self.scaler = joblib.load(self.models_dir / "scaler.joblib")
+                logger.info("Scaler loaded successfully")
+            except Exception as e:
+                logger.error(f"Error loading scaler: {e}")
+                
+            try:
+                self.label_encoders = joblib.load(self.models_dir / "label_encoders.joblib")
+                logger.info("Label encoders loaded successfully")
+            except Exception as e:
+                logger.error(f"Error loading label encoders: {e}")
             
             # Load feature importance
             importance_path = self.models_dir / "feature_importance.csv"
             if importance_path.exists():
-                self.feature_importance = pd.read_csv(importance_path)
+                try:
+                    self.feature_importance = pd.read_csv(importance_path)
+                    logger.info("Feature importance loaded successfully")
+                except Exception as e:
+                    logger.error(f"Error loading feature importance: {e}")
             
-            logger.info("All models loaded successfully.")
+            logger.info(f"Models loaded: {list(self.spatial_models.keys())}")
+            
         except Exception as e:
             logger.error(f"Error loading models: {e}")
             raise
+    
+    def _load_spatial_models(self):
+        """Load spatial models with proper handling for different model types."""
+        
+        # Try to load joblib models (scikit-learn models)
+        for model_file in self.models_dir.glob("*_model.joblib"):
+            model_name = model_file.stem.replace("_model", "")
+            
+            # Skip XGBoost models - they'll be loaded separately
+            if 'xgb' in model_name.lower() or 'xgboost' in model_name.lower():
+                continue
+                
+            try:
+                self.spatial_models[model_name] = joblib.load(model_file)
+                logger.info(f"Loaded joblib model: {model_name}")
+            except Exception as e:
+                logger.error(f"Error loading joblib model {model_name}: {e}")
+        
+        # Load XGBoost models using XGBoost's native loading methods
+        if XGBOOST_AVAILABLE:
+            self._load_xgboost_models()
+    
+    def _load_xgboost_models(self):
+        """Load XGBoost models using proper XGBoost loading methods."""
+        
+        # Look for XGBoost model files with various extensions
+        xgb_extensions = ['.json', '.ubj', '.model', '.xgb']
+        xgb_patterns = ['*xgb*', '*xgboost*', '*XGB*']
+        
+        for pattern in xgb_patterns:
+            for ext in xgb_extensions:
+                for model_file in self.models_dir.glob(f"{pattern}{ext}"):
+                    model_name = model_file.stem.replace("_model", "").replace(".", "_")
+                    
+                    try:
+                        # Create XGBoost model and load
+                        if 'regressor' in model_name.lower() or 'reg' in model_name.lower():
+                            model = xgb.XGBRegressor()
+                        else:
+                            model = xgb.XGBClassifier()
+                        
+                        model.load_model(str(model_file))
+                        self.spatial_models[model_name] = model
+                        logger.info(f"Loaded XGBoost model: {model_name} from {model_file}")
+                        break  # Successfully loaded, don't try other extensions for this pattern
+                        
+                    except Exception as e:
+                        logger.warning(f"Failed to load XGBoost model {model_file}: {e}")
+                        continue
+        
+        # If no XGBoost models found, try to load from joblib as fallback
+        # (in case they were saved with joblib.dump instead of model.save_model)
+        for model_file in self.models_dir.glob("*xgb*.joblib"):
+            model_name = model_file.stem.replace("_model", "")
+            
+            try:
+                self.spatial_models[model_name] = joblib.load(model_file)
+                logger.info(f"Loaded XGBoost model from joblib: {model_name}")
+            except Exception as e:
+                logger.error(f"Failed to load XGBoost model from joblib {model_name}: {e}")
     
     def predict_spatial_crime_rate(self, area_features: pd.DataFrame) -> Dict[str, List[float]]:
         """
@@ -84,6 +168,10 @@ class CrimeRatePredictor:
         """
         try:
             logger.info("Making spatial crime rate predictions...")
+            
+            if not self.spatial_models:
+                logger.warning("No spatial models loaded")
+                return {"error": ["No models available"]}
             
             # Prepare features
             prepared_features = self._prepare_area_features(area_features)
@@ -112,8 +200,12 @@ class CrimeRatePredictor:
                 if prepared_features[col].dtype not in ['int64', 'float64']:
                     prepared_features[col] = pd.to_numeric(prepared_features[col], errors='coerce').fillna(0.0)
             
-            # Scale features
-            features_scaled = self.scaler.transform(prepared_features)
+            # Scale features if scaler is available
+            if self.scaler is not None:
+                features_scaled = self.scaler.transform(prepared_features)
+            else:
+                logger.warning("No scaler available, using unscaled features")
+                features_scaled = prepared_features.values
             
             # Make predictions with each spatial model
             predictions = {}
@@ -122,10 +214,15 @@ class CrimeRatePredictor:
                     try:
                         pred = model.predict(features_scaled)
                         predictions[name] = pred.tolist()
+                        logger.info(f"Successfully predicted with model: {name}")
                     except Exception as model_error:
                         logger.error(f"Error with model {name}: {model_error}")
                         # Provide fallback prediction (mean of training data or 0.5)
                         predictions[name] = [0.5] * len(features_scaled)
+            
+            if not predictions:
+                logger.warning("No successful predictions made")
+                return {"fallback": [0.5]}
             
             return predictions
             
@@ -134,9 +231,7 @@ class CrimeRatePredictor:
             # Return fallback predictions instead of raising exception
             logger.info("Returning fallback predictions due to error")
             return {
-                "random_forest": [0.5],
-                "gradient_boosting": [0.5], 
-                "xgboost": [0.5]
+                "fallback": [0.5]
             }
     
     def predict_temporal_crime_rate(self, 
@@ -209,14 +304,15 @@ class CrimeRatePredictor:
         area_data['is_night'] = ((area_data['hour'] >= 20) | (area_data['hour'] <= 4)).astype(int)
 
         # Encode categorical variables
-        for col, encoder in self.label_encoders.items():
-            if col in area_data.columns:
-                if area_data[col].isnull().any():
-                    area_data[col] = area_data[col].fillna('Unknown')
-                # Handle unseen categories
-                area_data[col] = area_data[col].astype(str)
-                area_data[col] = area_data[col].map(lambda x: encoder.transform([x])[0] 
-                                                   if x in encoder.classes_ else 0)
+        if self.label_encoders:
+            for col, encoder in self.label_encoders.items():
+                if col in area_data.columns:
+                    if area_data[col].isnull().any():
+                        area_data[col] = area_data[col].fillna('Unknown')
+                    # Handle unseen categories
+                    area_data[col] = area_data[col].astype(str)
+                    area_data[col] = area_data[col].map(lambda x: encoder.transform([x])[0] 
+                                                       if x in encoder.classes_ else 0)
 
         # Group by AREA and aggregate as in training
         spatial_features = area_data.groupby('AREA').agg({
@@ -278,5 +374,6 @@ class CrimeRatePredictor:
             "temporal_model_loaded": self.temporal_model is not None,
             "scaler_loaded": self.scaler is not None,
             "encoders_loaded": self.label_encoders is not None,
-            "feature_importance_loaded": self.feature_importance is not None
-        } 
+            "feature_importance_loaded": self.feature_importance is not None,
+            "xgboost_available": XGBOOST_AVAILABLE
+        }
