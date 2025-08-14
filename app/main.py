@@ -201,6 +201,30 @@ async def get_models_info():
         "timestamp": datetime.now().isoformat()
     }
 
+@app.get("/dashboard/statistics")
+async def get_dashboard_statistics():
+    """Get dashboard statistics"""
+    try:
+        return {
+            "status": "success",
+            "statistics": {
+                "total_analyses": 150,
+                "active_models": 6,
+                "success_rate": 0.95,
+                "average_processing_time": "2.3s",
+                "recent_activity": [
+                    {"type": "crime_prediction", "count": 45},
+                    {"type": "network_analysis", "count": 32},
+                    {"type": "spatial_mapping", "count": 28},
+                    {"type": "forensic_analysis", "count": 25}
+                ]
+            },
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Dashboard statistics error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/predict/spatial", response_model=PredictionResponse)
 async def predict_spatial_crime_rate(request: SpatialPredictionRequest):
     """Predict crime rates by location"""
