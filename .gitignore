@@ -147,9 +147,6 @@ tmp/
 uploads/
 temp_uploads/
 
-# Large model files (exceeding GitHub limits)
-# Note: crime_type_rf_model.pkl is 590MB - too large for GitHub
-app/services/structured/crime_type_rf_model.pkl
 
 # Data files
 data/
