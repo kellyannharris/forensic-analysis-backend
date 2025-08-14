@@ -316,13 +316,10 @@ async def predict_crime_rate(request: CrimeDataRequest):
     start_time = time.time()
     
     try:
-        models_ready = check_models_loaded()
-        if models_ready:
-            df = pd.DataFrame(request.crime_data)
-            # Use spatial prediction as default
-            results = predictor.predict_spatial_crime_rate(df)
-        else:
-            results = get_mock_prediction_results()
+        check_models_loaded()
+        df = pd.DataFrame(request.crime_data)
+        # Use spatial prediction as default
+        results = predictor.predict_spatial_crime_rate(df)
         
         return PredictionResponse(
             status="success",
@@ -333,13 +330,7 @@ async def predict_crime_rate(request: CrimeDataRequest):
         
     except Exception as e:
         logger.error(f"Crime rate prediction error: {e}")
-        # Return mock data on error
-        return PredictionResponse(
-            status="success",
-            results=get_mock_prediction_results(),
-            timestamp=datetime.now().isoformat(),
-            processing_time=time.time() - start_time
-        )
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/network/build", response_model=AnalysisResponse)
 async def build_criminal_network(request: NetworkAnalysisRequest):
@@ -347,16 +338,9 @@ async def build_criminal_network(request: NetworkAnalysisRequest):
     start_time = time.time()
     
     try:
-        models_ready = check_models_loaded()
-        if models_ready:
-            df = pd.DataFrame(request.crime_data)
-            results = network_analyzer.build_network(df, top_n=request.top_n)
-        else:
-            results = {
-                "nodes": [{"id": "node1", "weight": 5}, {"id": "node2", "weight": 3}],
-                "edges": [{"source": "node1", "target": "node2", "weight": 2}],
-                "model_status": "mock"
-            }
+        check_models_loaded()
+        df = pd.DataFrame(request.crime_data)
+        results = network_analyzer.build_network(df, top_n=request.top_n)
         
         return AnalysisResponse(
             status="success",
@@ -367,17 +351,7 @@ async def build_criminal_network(request: NetworkAnalysisRequest):
         
     except Exception as e:
         logger.error(f"Network analysis error: {e}")
-        # Return mock data on error
-        return AnalysisResponse(
-            status="success",
-            summary={
-                "nodes": [{"id": "node1", "weight": 5}, {"id": "node2", "weight": 3}],
-                "edges": [{"source": "node1", "target": "node2", "weight": 2}],
-                "model_status": "mock"
-            },
-            timestamp=datetime.now().isoformat(),
-            processing_time=time.time() - start_time
-        )
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/network/summary", response_model=AnalysisResponse)
 async def get_network_summary():
