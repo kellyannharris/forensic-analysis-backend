@@ -82,17 +82,57 @@ async def startup_event():
             models_dir = current_dir / "services" / "structured"
             
             global predictor, network_analyzer, spatial_mapper, temporal_analyzer, classifier, data_analyzer
-            predictor = CrimeRatePredictor(models_dir=str(models_dir))
-            network_analyzer = CriminalNetworkAnalyzer()
-            spatial_mapper = SpatialCrimeMapper()
-            temporal_analyzer = TemporalPatternAnalyzer()
-            classifier = CrimeTypeClassifier(model_path=str(models_dir / "crime_type_rf_model.pkl"))
-            data_analyzer = LAPDCrimeDataAnalyzer()
             
-            logger.info("All models loaded!")
+            # Load models individually to handle failures gracefully
+            try:
+                predictor = CrimeRatePredictor(models_dir=str(models_dir))
+                logger.info("CrimeRatePredictor loaded successfully")
+            except Exception as e:
+                logger.error(f"Failed to load CrimeRatePredictor: {e}")
+                predictor = None
+            
+            try:
+                network_analyzer = CriminalNetworkAnalyzer()
+                logger.info("CriminalNetworkAnalyzer loaded successfully")
+            except Exception as e:
+                logger.error(f"Failed to load CriminalNetworkAnalyzer: {e}")
+                network_analyzer = None
+            
+            try:
+                spatial_mapper = SpatialCrimeMapper()
+                logger.info("SpatialCrimeMapper loaded successfully")
+            except Exception as e:
+                logger.error(f"Failed to load SpatialCrimeMapper: {e}")
+                spatial_mapper = None
+            
+            try:
+                temporal_analyzer = TemporalPatternAnalyzer()
+                logger.info("TemporalPatternAnalyzer loaded successfully")
+            except Exception as e:
+                logger.error(f"Failed to load TemporalPatternAnalyzer: {e}")
+                temporal_analyzer = None
+            
+            try:
+                classifier = CrimeTypeClassifier(model_path=str(models_dir / "crime_type_rf_model.pkl"))
+                logger.info("CrimeTypeClassifier loaded successfully")
+            except Exception as e:
+                logger.error(f"Failed to load CrimeTypeClassifier: {e}")
+                classifier = None
+            
+            try:
+                data_analyzer = LAPDCrimeDataAnalyzer()
+                logger.info("LAPDCrimeDataAnalyzer loaded successfully")
+            except Exception as e:
+                logger.error(f"Failed to load LAPDCrimeDataAnalyzer: {e}")
+                data_analyzer = None
+            
+            loaded_count = sum([predictor is not None, network_analyzer is not None, 
+                              spatial_mapper is not None, temporal_analyzer is not None,
+                              classifier is not None, data_analyzer is not None])
+            logger.info(f"Loaded {loaded_count}/6 models successfully")
             
         except Exception as e:
-            logger.error(f"Error loading models: {e}")
+            logger.error(f"Error in model loading: {e}")
     
     # Load in background
     model_thread = threading.Thread(target=load_models)
@@ -144,18 +184,10 @@ class ErrorResponse(BaseModel):
 def check_models_loaded():
     """Make sure models are loaded"""
     if not predictor or not network_analyzer or not spatial_mapper or not temporal_analyzer or not classifier or not data_analyzer:
-        logger.warning("Models not loaded, using mock data")
-        return False
-    return True
-
-def get_mock_prediction_results():
-    """Return mock prediction results when models are loading"""
-    return {
-        "predictions": [0.15, 0.22, 0.18, 0.31, 0.14],
-        "confidence": 0.85,
-        "model_status": "mock",
-        "message": "Using mock data while models load"
-    }
+        raise HTTPException(
+            status_code=503, 
+            detail="Models are still loading. Please try again in a few seconds."
+        )
 
 @app.get("/")
 async def welcome():
