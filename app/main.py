@@ -449,7 +449,7 @@ async def classify_crime_types(request: ClassificationRequest):
         check_models_loaded()
         
         df = pd.DataFrame(request.crime_data)
-        results = classifier.classify_crimes(df)
+        results = classifier.classify_crime_types(df)
         
         return PredictionResponse(
             status="success",
