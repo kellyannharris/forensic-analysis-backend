@@ -3,7 +3,7 @@ Forensic Backend API
 Kelly-Ann Harris - Capstone Project
 Main FastAPI app for crime and forensic analysis
 """
-
+import pkg_resources
 import sys
 import os
 from pathlib import Path
