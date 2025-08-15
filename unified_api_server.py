@@ -21,27 +21,33 @@ from pydantic import BaseModel
 import uvicorn
 
 # Add project directories to path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'data-processing', 'structured'))
-sys.path.append(os.path.join(os.path.dirname(__file__), 'data-processing', 'unstructured'))
-sys.path.append(os.path.join(os.path.dirname(__file__), 'crime_analysis_api', 'structured_data_models'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'app', 'services', 'structured'))
 
 # Import all analysis services
-from crime_rate_predictor import CrimeRatePredictor
-from criminal_network_analyzer import CriminalNetworkAnalyzer
-from spatial_crime_mapper import SpatialCrimeMapper
-from temporal_pattern_analyzer import TemporalPatternAnalyzer
-from crime_type_classifier import CrimeTypeClassifier
+try:
+    from app.services.structured.crime_rate_predictor import CrimeRatePredictor
+    from app.services.structured.criminal_network_analyzer import CriminalNetworkAnalyzer
+    from app.services.structured.spatial_crime_mapper import SpatialCrimeMapper
+    from app.services.structured.temporal_pattern_analyzer import TemporalPatternAnalyzer
+    from app.services.structured.crime_type_classifier import CrimeTypeClassifier
+except ImportError as e:
+    logger.warning(f"Failed to import structured services: {e}")
+    CrimeRatePredictor = None
+    CriminalNetworkAnalyzer = None
+    SpatialCrimeMapper = None
+    TemporalPatternAnalyzer = None
+    CrimeTypeClassifier = None
 
 # Import unstructured analysis
-from enhanced_cartridge_case_analyzer import EnhancedCartridgeCaseAnalyzer
 try:
-    from bloodsplatter_cnn import BloodsplatterCNN
-except ImportError:
+    from app.services.unstructured.cartridge_case_service import CartridgeCaseAnalyzer as EnhancedCartridgeCaseAnalyzer
+    from app.services.unstructured.bloodsplatter_service import BloodSpatterCNN
+except ImportError as e:
+    logger.warning(f"Failed to import unstructured services: {e}")
+    EnhancedCartridgeCaseAnalyzer = None
     BloodsplatterCNN = None
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+
 
 # Create FastAPI app
 app = FastAPI(
@@ -55,7 +61,16 @@ app = FastAPI(
 # Enable CORS for frontend integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001", "http://127.0.0.1:3001", "http://localhost:3002", "http://127.0.0.1:3002"],
+    allow_origins=[
+        "http://localhost:3000", 
+        "http://127.0.0.1:3000", 
+        "http://localhost:3001", 
+        "http://127.0.0.1:3001", 
+        "http://localhost:3002", 
+        "http://127.0.0.1:3002",
+        "https://crime-analysis-frontend.vercel.app",
+        "https://crime-analysis-frontend.vercel.app/"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -114,48 +129,91 @@ async def startup_event():
     global crime_predictor, network_analyzer, spatial_mapper, temporal_analyzer
     global crime_classifier, cartridge_analyzer, bloodsplatter_analyzer, system_status
     
+    import logging
+    logger = logging.getLogger(__name__)
+    
     logger.info("Starting Unified Crime & Forensic Analysis API Server...")
     
     try:
         # Initialize structured data services
         logger.info("Loading structured data models...")
         
-        crime_predictor = CrimeRatePredictor()
-        system_status["models_loaded"]["crime_predictor"] = True
-        logger.info("✅ Crime Rate Predictor loaded")
+        if CrimeRatePredictor:
+            try:
+                crime_predictor = CrimeRatePredictor()
+                system_status["models_loaded"]["crime_predictor"] = True
+                logger.info("✅ Crime Rate Predictor loaded")
+            except Exception as e:
+                logger.warning(f"Failed to load CrimeRatePredictor: {e}")
+                crime_predictor = None
         
-        network_analyzer = CriminalNetworkAnalyzer()
-        system_status["models_loaded"]["network_analyzer"] = True
-        logger.info("✅ Criminal Network Analyzer loaded")
+        if CriminalNetworkAnalyzer:
+            try:
+                network_analyzer = CriminalNetworkAnalyzer()
+                system_status["models_loaded"]["network_analyzer"] = True
+                logger.info("✅ Criminal Network Analyzer loaded")
+            except Exception as e:
+                logger.warning(f"Failed to load CriminalNetworkAnalyzer: {e}")
+                network_analyzer = None
         
-        spatial_mapper = SpatialCrimeMapper()
-        system_status["models_loaded"]["spatial_mapper"] = True
-        logger.info("✅ Spatial Crime Mapper loaded")
+        if SpatialCrimeMapper:
+            try:
+                spatial_mapper = SpatialCrimeMapper()
+                system_status["models_loaded"]["spatial_mapper"] = True
+                logger.info("✅ Spatial Crime Mapper loaded")
+            except Exception as e:
+                logger.warning(f"Failed to load SpatialCrimeMapper: {e}")
+                spatial_mapper = None
         
-        temporal_analyzer = TemporalPatternAnalyzer()
-        system_status["models_loaded"]["temporal_analyzer"] = True
-        logger.info("✅ Temporal Pattern Analyzer loaded")
+        if TemporalPatternAnalyzer:
+            try:
+                temporal_analyzer = TemporalPatternAnalyzer()
+                system_status["models_loaded"]["temporal_analyzer"] = True
+                logger.info("✅ Temporal Pattern Analyzer loaded")
+            except Exception as e:
+                logger.warning(f"Failed to load TemporalPatternAnalyzer: {e}")
+                temporal_analyzer = None
         
-        crime_classifier = CrimeTypeClassifier()
-        system_status["models_loaded"]["crime_classifier"] = True
-        logger.info("✅ Crime Type Classifier loaded")
+        if CrimeTypeClassifier:
+            try:
+                crime_classifier = CrimeTypeClassifier()
+                system_status["models_loaded"]["crime_classifier"] = True
+                logger.info("✅ Crime Type Classifier loaded")
+            except Exception as e:
+                logger.warning(f"Failed to load CrimeTypeClassifier: {e}")
+                crime_classifier = None
         
         # Initialize unstructured data services
         logger.info("Loading unstructured data models...")
         
-        cartridge_analyzer = EnhancedCartridgeCaseAnalyzer()
-        system_status["models_loaded"]["cartridge_analyzer"] = True
-        logger.info("✅ Enhanced Cartridge Case Analyzer loaded")
+        if EnhancedCartridgeCaseAnalyzer:
+            try:
+                cartridge_analyzer = EnhancedCartridgeCaseAnalyzer()
+                system_status["models_loaded"]["cartridge_analyzer"] = True
+                logger.info("✅ Enhanced Cartridge Case Analyzer loaded")
+            except Exception as e:
+                logger.warning(f"Failed to load EnhancedCartridgeCaseAnalyzer: {e}")
+                cartridge_analyzer = None
         
         if BloodsplatterCNN:
-            bloodsplatter_analyzer = BloodsplatterCNN()
-            system_status["models_loaded"]["bloodsplatter_analyzer"] = True
-            logger.info("✅ Bloodsplatter CNN loaded")
+            try:
+                bloodsplatter_analyzer = BloodsplatterCNN()
+                system_status["models_loaded"]["bloodsplatter_analyzer"] = True
+                logger.info("✅ Bloodsplatter CNN loaded")
+            except Exception as e:
+                logger.warning(f"Failed to load BloodsplatterCNN: {e}")
+                bloodsplatter_analyzer = None
         
-        system_status["status"] = "operational"
+        # Check if any services loaded successfully
+        loaded_count = sum(system_status["models_loaded"].values())
+        if loaded_count > 0:
+            system_status["status"] = "operational"
+            logger.info(f"🚀 {loaded_count} services initialized successfully!")
+        else:
+            system_status["status"] = "warning"
+            logger.warning("⚠️ No services loaded, but API endpoints will still be available")
+        
         system_status["last_updated"] = datetime.now().isoformat()
-        
-        logger.info("🚀 All services initialized successfully!")
         
     except Exception as e:
         error_msg = f"Failed to initialize services: {str(e)}"
@@ -300,6 +358,9 @@ async def get_dashboard_statistics():
 @app.post("/predict/crime-rate")
 async def predict_crime_rate(request: CrimePredictionRequest):
     """Predict crime rates using multiple ML models"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
         if not crime_predictor:
             raise HTTPException(status_code=503, detail="Crime predictor not initialized")
@@ -329,14 +390,17 @@ async def predict_crime_rate(request: CrimePredictionRequest):
             area_name = area_names.get(area, f"Area {area}")
             crime_type_name = crime_types.get(crime_type, f"Crime Type {crime_type}")
             
+            # Convert crime data to DataFrame for spatial prediction
+            import pandas as pd
+            crime_df = pd.DataFrame([crime_data])
+            
             # Use spatial prediction for area-based forecasting
-            spatial_result = crime_predictor.predict_spatial_crime_rate(area, area_name)
+            spatial_result = crime_predictor.predict_spatial_crime_rate(crime_df)
             
             # Use temporal prediction for time-based forecasting  
             temporal_result = crime_predictor.predict_temporal_crime_rate(
-                start_date=datetime.now().strftime('%Y-%m-%d'),
-                end_date=(datetime.now() + timedelta(days=request.days_ahead)).strftime('%Y-%m-%d'),
-                periods=request.days_ahead
+                historical_data=crime_df,
+                days_ahead=request.days_ahead
             )
             
             # Generate realistic predictions based on area and crime type
@@ -393,6 +457,9 @@ async def predict_crime_rate(request: CrimePredictionRequest):
 @app.post("/classify/crime-types")
 async def classify_crime_types(request: Dict[str, Any]):
     """Classify crime types using trained Random Forest model"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
         if not crime_classifier:
             raise HTTPException(status_code=503, detail="Crime classifier not initialized")
@@ -402,13 +469,12 @@ async def classify_crime_types(request: Dict[str, Any]):
         results = []
         
         for data in crime_data:
-            # Simulate classification using available features
-            classification = crime_classifier.classify_crime_type(
-                area=data.get('AREA', 14),
-                time_occ=data.get('TIME OCC', '1400'),
-                lat=data.get('LAT', 34.0522),
-                lon=data.get('LON', -118.2437)
-            )
+            # Convert to DataFrame for classification
+            import pandas as pd
+            crime_df = pd.DataFrame([data])
+            
+            # Use the correct method name
+            classification = crime_classifier.classify_crime_types(crime_df)
             
             results.append({
                 "predicted_crime_type": classification.get('crime_type', 'VEHICLE - STOLEN'),
@@ -436,6 +502,9 @@ async def classify_crime_types(request: Dict[str, Any]):
 @app.post("/analyze/criminal-network")
 async def analyze_criminal_network(request: NetworkAnalysisRequest):
     """Analyze criminal networks using graph analytics"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
         if not network_analyzer:
             raise HTTPException(status_code=503, detail="Network analyzer not initialized")
@@ -560,6 +629,9 @@ async def analyze_criminal_network(request: NetworkAnalysisRequest):
 @app.post("/predict/spatial")
 async def predict_spatial_crime(request: SpatialAnalysisRequest):
     """Perform spatial crime analysis and hotspot detection"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
         if not spatial_mapper:
             raise HTTPException(status_code=503, detail="Spatial mapper not initialized")
@@ -597,6 +669,9 @@ async def predict_spatial_crime(request: SpatialAnalysisRequest):
 @app.post("/analyze/temporal-patterns")
 async def analyze_temporal_patterns(request: TemporalAnalysisRequest):
     """Analyze temporal patterns in crime data"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
         if not temporal_analyzer:
             raise HTTPException(status_code=503, detail="Temporal analyzer not initialized")
@@ -730,6 +805,9 @@ async def get_la_crime_hotspots(
     time_range: int = 30
 ):
     """Get Los Angeles crime hotspot data for interactive map"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
         # LAPD Division data
         lapd_divisions = [
@@ -837,6 +915,9 @@ async def get_la_crime_hotspots(
 @app.post("/forensics/bloodsplatter/analyze")
 async def analyze_bloodsplatter(image: UploadFile = File(...)):
     """Analyze bloodsplatter patterns for forensic reconstruction"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
         if not bloodsplatter_analyzer:
             raise HTTPException(status_code=503, detail="Bloodsplatter analyzer not initialized")
@@ -888,6 +969,9 @@ async def analyze_bloodsplatter(image: UploadFile = File(...)):
 @app.post("/forensics/cartridge/analyze")
 async def analyze_cartridge_case(x3p_file: UploadFile = File(...)):
     """Analyze cartridge cases for firearm identification"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
         if not cartridge_analyzer:
             raise HTTPException(status_code=503, detail="Cartridge analyzer not initialized")
@@ -954,6 +1038,9 @@ async def comprehensive_analysis(
     cartridge_case: Optional[UploadFile] = File(None)
 ):
     """Perform comprehensive multi-modal analysis combining structured and unstructured data"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
         results = {
             "analysis_id": f"comprehensive_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
@@ -1341,6 +1428,510 @@ async def analyze_cartridge_frontend(image: UploadFile = File(...)):
         raise
     except Exception as e:
         logger.error(f"Cartridge analysis error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# =============================================================================
+# MISSING ENDPOINTS FOR FRONTEND COMPATIBILITY
+# =============================================================================
+
+@app.get("/")
+async def root():
+    """Root endpoint"""
+    return {
+        "message": "Integrated Crime & Forensic Analysis System",
+        "version": "1.0.0",
+        "author": "Kelly-Ann Harris",
+        "endpoints": {
+            "docs": "/docs",
+            "health": "/health",
+            "models": "/models/info",
+            "dashboard": "/dashboard/statistics"
+        }
+    }
+
+@app.post("/predict/temporal")
+async def predict_temporal_crime(request: CrimePredictionRequest):
+    """Predict temporal crime patterns"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not temporal_analyzer:
+            raise HTTPException(status_code=503, detail="Temporal analyzer not initialized")
+        
+        # Process temporal prediction
+        temporal_result = temporal_analyzer.predict_temporal_crime_rate(
+            crime_data=request.crime_data,
+            days_ahead=request.days_ahead
+        )
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "temporal_prediction": temporal_result,
+            "forecast_period": f"{request.days_ahead} days"
+        }
+        
+    except Exception as e:
+        logger.error(f"Temporal prediction error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/network/build")
+async def build_network(request: NetworkAnalysisRequest):
+    """Build criminal network from crime data"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not network_analyzer:
+            raise HTTPException(status_code=503, detail="Network analyzer not initialized")
+        
+        # Build network from crime data
+        network_result = network_analyzer.build_network(
+            crime_data=request.crime_data,
+            analysis_type=request.analysis_type
+        )
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "network": network_result
+        }
+        
+    except Exception as e:
+        logger.error(f"Network build error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/network/summary")
+async def get_network_summary():
+    """Get network analysis summary"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not network_analyzer:
+            raise HTTPException(status_code=503, detail="Network analyzer not initialized")
+        
+        # Check if network has been built, if not return default summary
+        try:
+            summary = network_analyzer.get_network_summary()
+        except ValueError as ve:
+            # Network not built yet, return default summary
+            summary = {
+                "total_nodes": 0,
+                "total_edges": 0,
+                "density": 0.0,
+                "clustering_coefficient": 0.0,
+                "status": "No network data available"
+            }
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "network_summary": summary
+        }
+        
+    except Exception as e:
+        logger.error(f"Network summary error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/network/centrality")
+async def get_network_centrality(top_n: int = 10):
+    """Get network centrality analysis"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not network_analyzer:
+            raise HTTPException(status_code=503, detail="Network analyzer not initialized")
+        
+        centrality = network_analyzer.analyze_centrality(top_n=top_n)
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "centrality_analysis": centrality
+        }
+        
+    except Exception as e:
+        logger.error(f"Network centrality error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/network/communities")
+async def get_network_communities(algorithm: str = "greedy_modularity"):
+    """Get network community detection"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not network_analyzer:
+            raise HTTPException(status_code=503, detail="Network analyzer not initialized")
+        
+        communities = network_analyzer.detect_communities(algorithm=algorithm)
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "community_detection": communities
+        }
+        
+    except Exception as e:
+        logger.error(f"Network communities error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/spatial/cluster")
+async def spatial_clustering(request: SpatialAnalysisRequest):
+    """Perform spatial clustering analysis"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not spatial_mapper:
+            raise HTTPException(status_code=503, detail="Spatial mapper not initialized")
+        
+        clusters = spatial_mapper.cluster_crimes(
+            crime_data=request.crime_data,
+            n_clusters=request.n_clusters
+        )
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "spatial_clusters": clusters
+        }
+        
+    except Exception as e:
+        logger.error(f"Spatial clustering error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/spatial/hotspots")
+async def spatial_hotspots(request: SpatialAnalysisRequest):
+    """Detect spatial crime hotspots"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not spatial_mapper:
+            raise HTTPException(status_code=503, detail="Spatial mapper not initialized")
+        
+        hotspots = spatial_mapper.detect_hotspots(
+            crime_data=request.crime_data,
+            n_clusters=request.n_clusters
+        )
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "crime_hotspots": hotspots
+        }
+        
+    except Exception as e:
+        logger.error(f"Spatial hotspots error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/spatial/summary")
+async def spatial_summary(request: SpatialAnalysisRequest):
+    """Get spatial analysis summary"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not spatial_mapper:
+            raise HTTPException(status_code=503, detail="Spatial mapper not initialized")
+        
+        summary = spatial_mapper.get_spatial_summary(
+            crime_data=request.crime_data
+        )
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "spatial_summary": summary
+        }
+        
+    except Exception as e:
+        logger.error(f"Spatial summary error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/temporal/forecast")
+async def temporal_forecast(request: TemporalAnalysisRequest):
+    """Perform temporal forecasting"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not temporal_analyzer:
+            raise HTTPException(status_code=503, detail="Temporal analyzer not initialized")
+        
+        forecast = temporal_analyzer.forecast_crime_trends(
+            crime_data=request.crime_data,
+            parameters=request.parameters
+        )
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "temporal_forecast": forecast
+        }
+        
+    except Exception as e:
+        logger.error(f"Temporal forecast error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/temporal/summary")
+async def temporal_summary():
+    """Get temporal analysis summary"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not temporal_analyzer:
+            raise HTTPException(status_code=503, detail="Temporal analyzer not initialized")
+        
+        summary = temporal_analyzer.get_temporal_summary()
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "temporal_summary": summary
+        }
+        
+    except Exception as e:
+        logger.error(f"Temporal summary error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/temporal/seasonality")
+async def temporal_seasonality(period: int = 7):
+    """Analyze temporal seasonality"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not temporal_analyzer:
+            raise HTTPException(status_code=503, detail="Temporal analyzer not initialized")
+        
+        seasonality = temporal_analyzer.analyze_seasonality(period=period)
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "seasonality_analysis": seasonality
+        }
+        
+    except Exception as e:
+        logger.error(f"Temporal seasonality error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/temporal/arima")
+async def temporal_arima(order: str = "5,1,0"):
+    """Perform ARIMA analysis"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not temporal_analyzer:
+            raise HTTPException(status_code=503, detail="Temporal analyzer not initialized")
+        
+        # Parse order parameter
+        p, d, q = map(int, order.split(','))
+        arima_result = temporal_analyzer.arima_analysis(p=p, d=d, q=q)
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "arima_analysis": arima_result
+        }
+        
+    except Exception as e:
+        logger.error(f"ARIMA analysis error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/classify/distribution")
+async def classify_distribution(request: Dict[str, Any]):
+    """Analyze crime type distribution"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not crime_classifier:
+            raise HTTPException(status_code=503, detail="Crime classifier not initialized")
+        
+        crime_data = request.get('crime_data', [])
+        distribution = crime_classifier.analyze_crime_type_distribution(crime_data)
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "crime_distribution": distribution
+        }
+        
+    except Exception as e:
+        logger.error(f"Classification distribution error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/classify/trends")
+async def classify_trends(request: Dict[str, Any]):
+    """Analyze crime type trends"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not crime_classifier:
+            raise HTTPException(status_code=503, detail="Crime classifier not initialized")
+        
+        crime_data = request.get('crime_data', [])
+        trends = crime_classifier.get_crime_type_trends(crime_data)
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "crime_trends": trends
+        }
+        
+    except Exception as e:
+        logger.error(f"Classification trends error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/classify/summary")
+async def classify_summary(request: Dict[str, Any]):
+    """Get crime classification summary"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not crime_classifier:
+            raise HTTPException(status_code=503, detail="Crime classifier not initialized")
+        
+        crime_data = request.get('crime_data', [])
+        summary = crime_classifier.get_classification_summary(crime_data)
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "classification_summary": summary
+        }
+        
+    except Exception as e:
+        logger.error(f"Classification summary error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/analyze/crime-types")
+async def analyze_crime_types():
+    """Get crime type analysis overview"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not crime_classifier:
+            raise HTTPException(status_code=503, detail="Crime classifier not initialized")
+        
+        analysis = crime_classifier.get_model_performance()
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "crime_type_analysis": analysis
+        }
+        
+    except Exception as e:
+        logger.error(f"Crime type analysis error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/analyze/report")
+async def analyze_report(request: Dict[str, Any]):
+    """Generate comprehensive analysis report"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        crime_data = request.get('crime_data', [])
+        
+        # Generate comprehensive report using all available analyzers
+        report = {
+            "report_id": f"report_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+            "timestamp": datetime.now().isoformat(),
+            "total_crimes": len(crime_data),
+            "analysis_summary": {}
+        }
+        
+        # Crime classification if classifier is available
+        if crime_classifier:
+            try:
+                classification = crime_classifier.classify_crime_types(crime_data)
+                report["analysis_summary"]["classification"] = classification
+            except Exception as e:
+                logger.warning(f"Classification failed: {e}")
+        
+        # Spatial analysis if spatial mapper is available
+        if spatial_mapper:
+            try:
+                spatial = spatial_mapper.analyze_spatial_patterns(crime_data)
+                report["analysis_summary"]["spatial"] = spatial
+            except Exception as e:
+                logger.warning(f"Spatial analysis failed: {e}")
+        
+        # Temporal analysis if temporal analyzer is available
+        if temporal_analyzer:
+            try:
+                temporal = temporal_analyzer.analyze_temporal_patterns(crime_data)
+                report["analysis_summary"]["temporal"] = temporal
+            except Exception as e:
+                logger.warning(f"Temporal analysis failed: {e}")
+        
+        # Network analysis if network analyzer is available
+        if network_analyzer:
+            try:
+                network = network_analyzer.build_network(crime_data)
+                report["analysis_summary"]["network"] = network
+            except Exception as e:
+                logger.warning(f"Network analysis failed: {e}")
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "comprehensive_report": report
+        }
+        
+    except Exception as e:
+        logger.error(f"Analysis report error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/upload/crime-data")
+async def upload_crime_data(file: UploadFile = File(...)):
+    """Upload crime data CSV file"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        if not file.filename.endswith('.csv'):
+            raise HTTPException(status_code=400, detail="File must be a CSV")
+        
+        # Read CSV content
+        import pandas as pd
+        import io
+        
+        content = await file.read()
+        df = pd.read_csv(io.StringIO(content.decode('utf-8')))
+        
+        # Basic validation
+        if df.empty:
+            raise HTTPException(status_code=400, detail="CSV file is empty")
+        
+        # Convert to JSON for response
+        crime_data = df.to_dict('records')
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "filename": file.filename,
+            "rows": len(df),
+            "columns": list(df.columns),
+            "crime_data": crime_data[:100],  # First 100 rows for preview
+            "message": f"Successfully uploaded {len(df)} crime records"
+        }
+        
+    except Exception as e:
+        logger.error(f"File upload error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # =============================================================================
